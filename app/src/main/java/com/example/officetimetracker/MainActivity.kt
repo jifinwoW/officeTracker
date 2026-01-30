@@ -70,8 +70,30 @@ class MainActivity : AppCompatActivity() {
         val currentId = bottomNavigationView.selectedItemId
         if (currentId == itemId) return
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, fragment)
-            .commit()
+        val transaction = supportFragmentManager.beginTransaction()
+
+        // Determine transition direction
+        when {
+            // Dashboard is the leftmost tab (1st)
+            itemId == R.id.nav_dashboard -> {
+                transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right)
+            }
+            // Settings is the rightmost tab (3rd)
+            itemId == R.id.nav_settings -> {
+                transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
+            }
+            // Reports is the middle tab (2nd)
+            itemId == R.id.nav_reports -> {
+                if (currentId == R.id.nav_dashboard) {
+                    // Moving from left to right
+                    transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
+                } else {
+                    // Moving from right to left (from Settings)
+                    transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right)
+                }
+            }
+        }
+
+        transaction.replace(R.id.fragmentContainer, fragment).commit()
     }
 }

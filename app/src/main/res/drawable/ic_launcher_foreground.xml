@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Heavy-Duty Professional Punch Icon (Simplified Fist) -->
+    <path
+        android:fillColor="#F8FAFC"
+        android:pathData="M68,36L40,36C36.69,36 34,38.69 34,42L34,66C34,69.31 36.69,72 40,72L68,72C71.31,72 74,69.31 74,66L74,42C74,38.69 71.31,36 68,36ZM44,66L40,66L40,42L44,42L44,66ZM52,66L48,66L48,42L52,42L52,66ZM60,66L56,66L56,42L60,42L60,66ZM68,66L64,66L64,42L68,42L68,66Z" />
+
+    <!-- Thumb Detail -->
+    <path
+        android:fillColor="#F8FAFC"
+        android:pathData="M34,54L28,54C25.79,54 24,55.79 24,58L24,62C24,64.21 25.79,66 28,66L34,66L34,54Z" />
+
+    <!-- Blue 'Power' Core -->
+    <path
+        android:fillColor="#38BDF8"
+        android:pathData="M48,54c0,3.31 2.69,6 6,6s6,-2.69 6,-6s-2.69,-6 -6,-6S48,50.69 48,54z" />
+</vector>

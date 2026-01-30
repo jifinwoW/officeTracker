@@ -175,7 +175,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="32dp"
-        android:text="Punch In/Out"
+        android:text="Punch"
         android:textAllCaps="false"
         android:textColor="@color/white"
         app:icon="@drawable/finger_print"

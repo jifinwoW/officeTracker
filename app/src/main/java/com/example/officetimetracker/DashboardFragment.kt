@@ -8,6 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
+import android.content.Intent
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -114,54 +117,69 @@ class DashboardFragment : Fragment() {
 
         val options = mutableListOf<String>()
         if (sessionManager.isCheckedIn()) {
-            if (!sessionManager.isOnBreak()) options.add("Start Break")
-            if (sessionManager.isOnBreak()) options.add("End Break")
-            options.add("Check Out")
+            if (!sessionManager.isOnBreak()) options.add("Break")
+            if (sessionManager.isOnBreak()) options.add("Resume")
+            options.add("Punch Out")
         } else {
-            options.add("Check In")
+            options.add("Punch In")
         }
 
         AlertDialog.Builder(requireContext())
             .setTitle("Select Action")
             .setItems(options.toTypedArray()) { _, which ->
                 when (options[which]) {
-                    "Check In" -> handleCheckIn()
-                    "Start Break" -> handleBreakIn()
-                    "End Break" -> handleBreakOut()
-                    "Check Out" -> handleCheckOut()
+                    "Punch In" -> handlePunchIn()
+                    "Break" -> handlePunchBreak()
+                    "Resume" -> handleResumeWork()
+                    "Punch Out" -> handlePunchOut()
                 }
             }
             .show()
     }
 
-    private fun handleCheckIn() {
+    private fun handlePunchIn() {
         val now = System.currentTimeMillis()
         sessionManager.saveCheckIn(now)
-        addLog("Checked In at ${formatTime(now)}")
+        addLog("Punch In at ${formatTime(now)}")
+        Toast.makeText(requireContext(), "Punched In", Toast.LENGTH_SHORT).show()
         startTimer()
+        updateWidget()
     }
 
-    private fun handleBreakIn() {
+    private fun handlePunchBreak() {
         val now = System.currentTimeMillis()
         sessionManager.startBreak(now)
-        addLog("Break started at ${formatTime(now)}")
+        addLog("Punch Break at ${formatTime(now)}")
+        Toast.makeText(requireContext(), "Break Started", Toast.LENGTH_SHORT).show()
+        updateWidget()
     }
 
-    private fun handleBreakOut() {
+    private fun handleResumeWork() {
         val now = System.currentTimeMillis()
         sessionManager.endBreak(now)
-        addLog("Break ended at ${formatTime(now)}")
+        addLog("Resumed Work at ${formatTime(now)}")
+        Toast.makeText(requireContext(), "Work Resumed", Toast.LENGTH_SHORT).show()
+        updateWidget()
     }
 
-    private fun handleCheckOut() {
+    private fun handlePunchOut() {
         val now = System.currentTimeMillis()
+        
+        // Auto-end break if active
+        if (sessionManager.isOnBreak()) {
+            sessionManager.endBreak(now)
+            addLog("Break ended (Auto) at ${formatTime(now)}")
+        }
+
         val worked = now - sessionManager.getCheckInMillis() - sessionManager.getTotalBreakMillis()
-        addLog("Checked Out at ${formatTime(now)} | Worked: ${formatDuration(worked)}")
+        addLog("Punch Out at ${formatTime(now)} | Worked: ${formatDuration(worked)}")
 
         sessionManager.saveTotalWorkedToday(worked)
         sessionManager.saveCheckOut(now)
+        Toast.makeText(requireContext(), "Punched Out", Toast.LENGTH_SHORT).show()
         stopTimer()
         startTimer()
+        updateWidget()
     }
 
     private fun startTimer() {
@@ -233,5 +251,14 @@ class DashboardFragment : Fragment() {
         val minutes = seconds / 60
         seconds %= 60
         return "%02d:%02d:%02d".format(hours, minutes, seconds)
+    }
+
+    private fun updateWidget() {
+        val intent = Intent(requireContext(), PunchWidgetProvider::class.java)
+        intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+        val ids = AppWidgetManager.getInstance(requireContext())
+            .getAppWidgetIds(ComponentName(requireContext(), PunchWidgetProvider::class.java))
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+        requireContext().sendBroadcast(intent)
     }
 }

@@ -54,10 +54,12 @@ class SessionManager(context: Context) {
 
     // --- Check In ---
     fun saveCheckIn(timeMillis: Long) {
-        prefs.edit().putLong("$KEY_CHECKIN-$todayKey", timeMillis).apply()
-        prefs.edit().putLong("$KEY_TOTAL_BREAK-$todayKey", 0L).apply()
-        prefs.edit().remove("$KEY_BREAK_START-$todayKey").apply()
-        prefs.edit().remove("$KEY_CHECKOUT-$todayKey").apply()
+        prefs.edit()
+            .putLong("$KEY_CHECKIN-$todayKey", timeMillis)
+            .putLong("$KEY_TOTAL_BREAK-$todayKey", 0L)
+            .remove("$KEY_BREAK_START-$todayKey")
+            .remove("$KEY_CHECKOUT-$todayKey")
+            .commit()
     }
 
     fun getCheckInMillis(): Long = prefs.getLong("$KEY_CHECKIN-$todayKey", 0L)
@@ -65,14 +67,16 @@ class SessionManager(context: Context) {
     fun isCheckedIn(): Boolean = getCheckInMillis() > 0L && !hasCheckedOutToday()
 
     fun clearCheckIn() {
-        prefs.edit().remove("$KEY_CHECKIN-$todayKey").apply()
-        prefs.edit().remove("$KEY_BREAK_START-$todayKey").apply()
-        prefs.edit().putLong("$KEY_TOTAL_BREAK-$todayKey", 0L).apply()
+        prefs.edit()
+            .remove("$KEY_CHECKIN-$todayKey")
+            .remove("$KEY_BREAK_START-$todayKey")
+            .putLong("$KEY_TOTAL_BREAK-$todayKey", 0L)
+            .commit()
     }
 
     // --- Break ---
     fun startBreak(timeMillis: Long) {
-        prefs.edit().putLong("$KEY_BREAK_START-$todayKey", timeMillis).apply()
+        prefs.edit().putLong("$KEY_BREAK_START-$todayKey", timeMillis).commit()
     }
 
     fun getBreakStartMillis(): Long = prefs.getLong("$KEY_BREAK_START-$todayKey", 0L)
@@ -81,8 +85,10 @@ class SessionManager(context: Context) {
         val breakStart = getBreakStartMillis()
         val duration = if (breakStart > 0) timeMillis - breakStart else 0L
         val totalBreak = getTotalBreakMillis() + duration
-        prefs.edit().putLong("$KEY_TOTAL_BREAK-$todayKey", totalBreak).apply()
-        prefs.edit().remove("$KEY_BREAK_START-$todayKey").apply()
+        prefs.edit()
+            .putLong("$KEY_TOTAL_BREAK-$todayKey", totalBreak)
+            .remove("$KEY_BREAK_START-$todayKey")
+            .commit()
     }
 
     fun isOnBreak(): Boolean = getBreakStartMillis() > 0L
@@ -91,7 +97,7 @@ class SessionManager(context: Context) {
 
     // --- Check Out ---
     fun saveCheckOut(timeMillis: Long) {
-        prefs.edit().putLong("$KEY_CHECKOUT-$todayKey", timeMillis).apply()
+        prefs.edit().putLong("$KEY_CHECKOUT-$todayKey", timeMillis).commit()
     }
 
     fun hasCheckedOutToday(): Boolean = prefs.getLong("$KEY_CHECKOUT-$todayKey", 0L) > 0L

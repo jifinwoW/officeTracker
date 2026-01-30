@@ -1,0 +1,83 @@
+# Gradle
+.gradle/
+/build/
+**/build/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# IntelliJ / Android Studio
+/.idea/
+*.iml
+.idea/*
+*.iws
+
+# Keystore
+*.jks
+*.keystore
+
+# Android Studio captures
+captures/
+
+# External native build folder
+.externalNativeBuild/
+.cxx/
+
+# NDK
+obj/
+
+# Generated files
+**/generated/
+**/generated/**/*
+
+# Kotlin/Java
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+
+# Gradle wrapper
+gradle/wrapper/gradle-wrapper.jar
+
+# Gradle cache
+.gradle/
+
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Logs
+*.log
+
+# Node
+node_modules/
+
+# VS Code
+.vscode/
+
+# Android specific
+*.keystore
+*.apk
+*.ap_ 
+
+# Crashlytics / Fabric
+fabric.properties
+
+# Misc
+*.orig
+
+# Exclude personal config files
+*.env
+
+# JetBrains IDEs
+out/
+
+# Keep the gradle wrapper and gradlew scripts
+!gradlew
+!gradlew.bat
+!gradle/wrapper/**

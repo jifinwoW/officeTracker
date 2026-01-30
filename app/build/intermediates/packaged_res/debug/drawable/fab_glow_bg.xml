@@ -1,8 +1,0 @@
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval">
-    <gradient
-        android:type="radial"
-        android:gradientRadius="40dp"
-        android:centerColor="#33FFFFFF"  
-        android:endColor="@android:color/transparent" /> <!-- outer fade -->
-</shape>

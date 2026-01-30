@@ -16,7 +16,7 @@ class ReportAdapter : RecyclerView.Adapter<ReportAdapter.ReportViewHolder>() {
     private var items: List<DailyLog> = emptyList()
 
     fun setData(data: List<DailyLog>) {
-        items = data
+        items = data.sortedByDescending { it.date }
         notifyDataSetChanged()
     }
 
@@ -29,14 +29,19 @@ class ReportAdapter : RecyclerView.Adapter<ReportAdapter.ReportViewHolder>() {
     override fun onBindViewHolder(holder: ReportViewHolder, position: Int) {
         val dailyLog = items[position]
         holder.textDate.text = formatDate(dailyLog.date)
-        holder.textWorked.text = "Worked: ${formatDuration(dailyLog.workedMs)}"
-        holder.textStatus.text = if (dailyLog.logs.isNotEmpty()) "✅" else "❌"
+        holder.textWorked.text = "Total Worked: ${formatDuration(dailyLog.workedMs)}"
+        
+        val hasLogs = dailyLog.logs.isNotEmpty()
+        holder.textStatus.text = if (hasLogs) "COMPLETED" else "NO LOGS"
+        holder.textStatus.setBackgroundResource(if (hasLogs) R.drawable.status_badge_bg else R.drawable.status_badge_muted_bg)
 
         holder.logsContainer.removeAllViews()
         dailyLog.logs.forEach {
             val tv = TextView(holder.itemView.context).apply {
-                text = it.message
-                textSize = 14f
+                text = "• ${it.message}"
+                textSize = 12f
+                setTextColor(context.getColor(R.color.text_secondary))
+                setPadding(0, 4, 0, 4)
             }
             holder.logsContainer.addView(tv)
         }
@@ -64,7 +69,7 @@ class ReportAdapter : RecyclerView.Adapter<ReportAdapter.ReportViewHolder>() {
         return try {
             val sdf = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
             val date = sdf.parse(dateKey)
-            val outFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+            val outFormat = SimpleDateFormat("EEEE, dd MMM yyyy", Locale.getDefault())
             outFormat.format(date!!)
         } catch (e: Exception) {
             dateKey

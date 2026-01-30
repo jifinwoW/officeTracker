@@ -13,20 +13,18 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import androidx.biometric.BiometricPrompt
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executor
-import android.animation.ObjectAnimator
-import android.animation.PropertyValuesHolder
-import android.animation.ValueAnimator
 
 class DashboardFragment : Fragment() {
 
-    private lateinit var fingerprintFab: FloatingActionButton
+    private lateinit var fingerprintFab: ExtendedFloatingActionButton
     private lateinit var timerText: TextView
     private lateinit var remainingText: TextView
+    private lateinit var greetingText: TextView
     private lateinit var logRecyclerView: RecyclerView
     private lateinit var sessionManager: SessionManager
     private lateinit var executor: Executor
@@ -46,21 +44,8 @@ class DashboardFragment : Fragment() {
         fingerprintFab = view.findViewById(R.id.fingerprintFab)
         timerText = view.findViewById(R.id.timerText)
         remainingText = view.findViewById(R.id.remainingText)
+        greetingText = view.findViewById(R.id.greetingText)
         logRecyclerView = view.findViewById(R.id.logRecyclerView)
-
-        // --- Add glow animation here ---
-    val glowView = view.findViewById<View>(R.id.fabGlow)
-    val scaleUp = ObjectAnimator.ofPropertyValuesHolder(
-        glowView,
-        PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 1.2f),
-        PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 1.2f),
-        PropertyValuesHolder.ofFloat(View.ALPHA, 0.5f, 0.8f)
-    ).apply {
-        duration = 1000
-        repeatMode = ValueAnimator.REVERSE
-        repeatCount = ValueAnimator.INFINITE
-    }
-    scaleUp.start()
 
         sessionManager = SessionManager(requireContext())
 
@@ -68,6 +53,8 @@ class DashboardFragment : Fragment() {
         logRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         logRecyclerView.adapter = logAdapter
         logAdapter.setLogs(sessionManager.getLogsForToday())
+
+        updateGreeting()
 
         executor = ContextCompat.getMainExecutor(requireContext())
         biometricPrompt = BiometricPrompt(requireActivity(), executor,
@@ -85,7 +72,7 @@ class DashboardFragment : Fragment() {
 
         promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle("Authenticate")
-            .setSubtitle("Use your fingerprint")
+            .setSubtitle("Confirm your identity to log hours")
             .setNegativeButtonText("Cancel")
             .build()
 
@@ -97,17 +84,32 @@ class DashboardFragment : Fragment() {
         return view
     }
 
+    override fun onResume() {
+        super.onResume()
+        updateGreeting()
+    }
+
+    private fun updateGreeting() {
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val timeGreeting = when (hour) {
+            in 0..11 -> "Good Morning"
+            in 12..16 -> "Good Afternoon"
+            else -> "Good Evening"
+        }
+        greetingText.text = "$timeGreeting, ${sessionManager.getUserName()}"
+    }
+
     private fun showActionDialog() {
-        // After check-out, no options today
         if (sessionManager.hasCheckedOutToday()) {
-            Toast.makeText(requireContext(), "You have already checked out today.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Daily shift completed.", Toast.LENGTH_SHORT).show()
             return
         }
 
         val options = mutableListOf<String>()
         if (sessionManager.isCheckedIn()) {
-            if (!sessionManager.isOnBreak()) options.add("Break In")
-            if (sessionManager.isOnBreak()) options.add("Break Out")
+            if (!sessionManager.isOnBreak()) options.add("Start Break")
+            if (sessionManager.isOnBreak()) options.add("End Break")
             options.add("Check Out")
         } else {
             options.add("Check In")
@@ -118,8 +120,8 @@ class DashboardFragment : Fragment() {
             .setItems(options.toTypedArray()) { _, which ->
                 when (options[which]) {
                     "Check In" -> handleCheckIn()
-                    "Break In" -> handleBreakIn()
-                    "Break Out" -> handleBreakOut()
+                    "Start Break" -> handleBreakIn()
+                    "End Break" -> handleBreakOut()
                     "Check Out" -> handleCheckOut()
                 }
             }
@@ -137,14 +139,12 @@ class DashboardFragment : Fragment() {
         val now = System.currentTimeMillis()
         sessionManager.startBreak(now)
         addLog("Break started at ${formatTime(now)}")
-        stopTimer()
     }
 
     private fun handleBreakOut() {
         val now = System.currentTimeMillis()
         sessionManager.endBreak(now)
         addLog("Break ended at ${formatTime(now)}")
-        startTimer()
     }
 
     private fun handleCheckOut() {
@@ -152,14 +152,14 @@ class DashboardFragment : Fragment() {
         val worked = now - sessionManager.getCheckInMillis() - sessionManager.getTotalBreakMillis()
         addLog("Checked Out at ${formatTime(now)} | Worked: ${formatDuration(worked)}")
 
-        // Save total worked today
         sessionManager.saveTotalWorkedToday(worked)
         sessionManager.saveCheckOut(now)
         stopTimer()
-        startTimer() // show timer even after checkout
+        startTimer()
     }
 
     private fun startTimer() {
+        stopTimer() // Prevent multiple runnables
         timerRunnable = object : Runnable {
             override fun run() {
                 val elapsed = when {
@@ -174,10 +174,14 @@ class DashboardFragment : Fragment() {
                     sessionManager.hasCheckedOutToday() -> sessionManager.getTotalWorkedToday()
                     else -> 0L
                 }
-                timerText.text = "Worked: ${formatDuration(elapsed)}"
-                val eightHoursMs = 8 * 3600 * 1000L
-                val remaining = (eightHoursMs - elapsed).coerceAtLeast(0L)
-                remainingText.text = "Remaining: ${formatDuration(remaining)}"
+                
+                timerText.text = formatDuration(elapsed)
+                
+                val workingHours = sessionManager.getWorkingHours()
+                val targetMs = (workingHours * 3600 * 1000).toLong()
+                val remaining = (targetMs - elapsed).coerceAtLeast(0L)
+                remainingText.text = "Target: ${formatDuration(remaining)} remaining"
+                
                 handler.postDelayed(this, 1000)
             }
         }

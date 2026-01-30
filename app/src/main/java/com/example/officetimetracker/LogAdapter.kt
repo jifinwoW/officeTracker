@@ -16,7 +16,7 @@ class LogAdapter : RecyclerView.Adapter<LogAdapter.LogViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LogViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(android.R.layout.simple_list_item_1, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_log, parent, false)
         return LogViewHolder(view)
     }
 
@@ -27,6 +27,6 @@ class LogAdapter : RecyclerView.Adapter<LogAdapter.LogViewHolder>() {
     override fun getItemCount(): Int = logs.size
 
     class LogViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val logText: TextView = itemView.findViewById(android.R.id.text1)
+        val logText: TextView = itemView.findViewById(R.id.logMessage)
     }
 }

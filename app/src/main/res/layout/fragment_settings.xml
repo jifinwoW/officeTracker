@@ -1,7 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <!-- You can add Switches, EditTexts for working hours, daily checkout, etc. -->
-</FrameLayout>
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_light"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Preferences"
+        android:textColor="@color/text_main"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="32dp"/>
+
+    <!-- Profile Section -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="1dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="#F1F5F9"
+        android:backgroundTint="@color/surface_white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Account Details"
+                android:textColor="@color/text_main"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Display Name"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="@color/accent_blue"
+                app:hintTextColor="@color/accent_blue">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/userNameEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:textColor="@color/text_main"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Work Settings Section -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="1dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="#F1F5F9"
+        android:backgroundTint="@color/surface_white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Work Target"
+                android:textColor="@color/text_main"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Daily Target (Hours)"
+                app:suffixText="hrs"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="@color/accent_blue"
+                app:hintTextColor="@color/accent_blue">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/workingHoursEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/text_main"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <Button
+        android:id="@+id/saveSettingsButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Apply Changes"
+        android:textAllCaps="false"
+        android:backgroundTint="@color/primary_800"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:cornerRadius="12dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <!-- Danger Zone -->
+    <Button
+        android:id="@+id/clearDataButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reset Application Data"
+        android:textAllCaps="false"
+        android:textColor="@color/error_red"
+        style="@style/Widget.MaterialComponents.Button.TextButton"/>
+
+</LinearLayout>

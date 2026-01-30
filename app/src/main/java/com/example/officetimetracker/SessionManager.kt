@@ -45,6 +45,8 @@ class SessionManager(context: Context) {
         private const val KEY_CHECKOUT = "checkout_time"
         private const val KEY_TOTAL_WORKED_TODAY = "total_worked_today"
         private const val KEY_TOTAL_WORKED_DATE = "total_worked_date"
+        private const val KEY_WORKING_HOURS = "working_hours"
+        private const val KEY_USER_NAME = "user_name"
     }
 
     private val todayKey: String
@@ -116,5 +118,22 @@ fun getTotalWorkedToday(): Long {
     val today = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
     val savedDate = prefs.getString(KEY_TOTAL_WORKED_DATE, "")
     return if (savedDate == today) prefs.getLong(KEY_TOTAL_WORKED_TODAY, 0L) else 0L
-}   
+}
+
+    // --- Settings ---
+    fun setWorkingHours(hours: Float) {
+        prefs.edit().putFloat(KEY_WORKING_HOURS, hours).apply()
+    }
+
+    fun getWorkingHours(): Float = prefs.getFloat(KEY_WORKING_HOURS, 8.0f) // default to 8 hours
+
+    fun setUserName(name: String) {
+        prefs.edit().putString(KEY_USER_NAME, name).apply()
+    }
+
+    fun getUserName(): String = prefs.getString(KEY_USER_NAME, "User") ?: "User"
+
+    fun clearAllData() {
+        prefs.edit().clear().apply()
+    }
 }

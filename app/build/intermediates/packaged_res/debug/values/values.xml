@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#000000</color>
+    <color name="darker_navy">#0D133A</color>
+    <color name="deep_navy">#1A237E</color>
+    <color name="gold_accent">#FFC107</color>
+    <color name="light_gray_bg">#F5F5F5</color>
+    <color name="purple_200">#BB86FC</color>
+    <color name="purple_500">#6200EE</color>
+    <color name="purple_700">#3700B3</color>
+    <color name="rich_gold">#FFA000</color>
+    <color name="teal_200">#03DAC5</color>
+    <color name="teal_700">#018786</color>
+    <color name="white">#FFFFFF</color>
+    <string name="app_name">Office Time Tracker</string>
+    <style name="Theme.OfficeTimeTracker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+        
+        <item name="colorPrimary">@color/deep_navy</item>
+        <item name="colorPrimaryVariant">@color/darker_navy</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        
+        <item name="colorSecondary">@color/gold_accent</item>
+        <item name="colorSecondaryVariant">@color/rich_gold</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        
+        <item name="android:colorBackground">@color/light_gray_bg</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/black</item>
+
+        
+        <item name="android:statusBarColor">@color/darker_navy</item>
+        <item name="android:navigationBarColor">@color/darker_navy</item>
+    </style>
+</resources>

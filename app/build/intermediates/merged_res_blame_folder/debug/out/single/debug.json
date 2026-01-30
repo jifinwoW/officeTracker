@@ -1,0 +1,102 @@
+[
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\layout_activity_main.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\layout_item_report.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\layout\\item_report.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\drawable_fab_glow_bg.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\drawable\\fab_glow_bg.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\drawable_ic_break.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\drawable\\ic_break.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\drawable_ic_launcher_round.png.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\drawable\\ic_launcher_round.png"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\drawable_ic_timer.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\drawable\\ic_timer.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\layout_fragment_settings.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\layout\\fragment_settings.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\layout_fragment_reports.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\layout\\fragment_reports.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\drawable_ic_launcher.png.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\drawable\\ic_launcher.png"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\layout_fragment_report.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\layout\\fragment_report.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\drawable_ic_fingerprint.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\drawable\\ic_fingerprint.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\drawable_card_background.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\drawable\\card_background.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\drawable_ic_check_in.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\drawable\\ic_check_in.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\drawable_ic_check_out.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\drawable\\ic_check_out.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\drawable_finger_print.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\drawable\\finger_print.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\menu_bottom_nav_menu.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\menu\\bottom_nav_menu.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\layout_fragment_dashboard.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\layout\\fragment_dashboard.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\drawable_ic_report.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\drawable\\ic_report.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\layout_item_daily_report.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\layout\\item_daily_report.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\drawable_dashboard_bg.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\drawable\\dashboard_bg.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\drawable_ic_arrow_right.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\drawable\\ic_arrow_right.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\drawable_ic_menu.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\drawable\\ic_menu.xml"
+    },
+    {
+        "merged": "com.example.officetimetracker.app-merged_res-39:/layout_fragment_dashboard.xml.flat",
+        "source": "com.example.officetimetracker.app-main-41:/layout/fragment_dashboard.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\drawable_ic_dashboard.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\drawable\\ic_dashboard.xml"
+    },
+    {
+        "merged": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-merged_res-39:\\drawable_ic_settings.xml.flat",
+        "source": "C:\\Users\\USER\\.gradle\\daemon\\8.1.1\\com.example.officetimetracker.app-main-41:\\drawable\\ic_settings.xml"
+    }
+]

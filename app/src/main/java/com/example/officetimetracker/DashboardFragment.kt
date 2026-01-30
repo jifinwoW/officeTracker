@@ -25,6 +25,9 @@ class DashboardFragment : Fragment() {
     private lateinit var timerText: TextView
     private lateinit var remainingText: TextView
     private lateinit var greetingText: TextView
+    private lateinit var estFinishText: TextView
+    private lateinit var estFinishLayout: View
+    private lateinit var workProgressBar: com.google.android.material.progressindicator.LinearProgressIndicator
     private lateinit var logRecyclerView: RecyclerView
     private lateinit var sessionManager: SessionManager
     private lateinit var executor: Executor
@@ -45,6 +48,9 @@ class DashboardFragment : Fragment() {
         timerText = view.findViewById(R.id.timerText)
         remainingText = view.findViewById(R.id.remainingText)
         greetingText = view.findViewById(R.id.greetingText)
+        estFinishText = view.findViewById(R.id.estFinishText)
+        estFinishLayout = view.findViewById(R.id.estFinishLayout)
+        workProgressBar = view.findViewById(R.id.workProgressBar)
         logRecyclerView = view.findViewById(R.id.logRecyclerView)
 
         sessionManager = SessionManager(requireContext())
@@ -181,6 +187,25 @@ class DashboardFragment : Fragment() {
                 val targetMs = (workingHours * 3600 * 1000).toLong()
                 val remaining = (targetMs - elapsed).coerceAtLeast(0L)
                 remainingText.text = "Target: ${formatDuration(remaining)} remaining"
+
+                // Update Progress Bar
+                val progress = if (targetMs > 0) (elapsed.toFloat() / targetMs * 100).toInt() else 0
+                workProgressBar.setProgress(progress.coerceIn(0, 100), true)
+
+                // Update Estimated Finish Time
+                if (sessionManager.isCheckedIn()) {
+                    val checkIn = sessionManager.getCheckInMillis()
+                    val totalBreakSoFar = if (sessionManager.isOnBreak()) {
+                        val breakStart = sessionManager.getBreakStartMillis()
+                        sessionManager.getTotalBreakMillis() + (System.currentTimeMillis() - breakStart)
+                    } else sessionManager.getTotalBreakMillis()
+                    
+                    val estimatedFinishMs = checkIn + targetMs + totalBreakSoFar
+                    estFinishText.text = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date(estimatedFinishMs))
+                    estFinishLayout.visibility = View.VISIBLE
+                } else {
+                    estFinishLayout.visibility = View.GONE
+                }
                 
                 handler.postDelayed(this, 1000)
             }
@@ -199,7 +224,7 @@ class DashboardFragment : Fragment() {
     }
 
     private fun formatTime(ms: Long): String =
-        SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(ms))
+        SimpleDateFormat("hh:mm:ss a", Locale.getDefault()).format(Date(ms))
 
     private fun formatDuration(ms: Long): String {
         var seconds = ms / 1000

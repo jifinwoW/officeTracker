@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Professional Deep Charcoal for selected -->
+    <item android:color="#0F172A" android:state_checked="true" />
+    <!-- Muted Silver/Gray for unselected -->
+    <item android:color="#94A3B8" />
+</selector>

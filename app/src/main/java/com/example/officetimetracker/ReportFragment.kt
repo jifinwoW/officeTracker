@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import com.example.officetimetracker.LogEntry
 
 class ReportFragment : Fragment() {
@@ -35,11 +38,13 @@ class ReportFragment : Fragment() {
 
     private fun loadLogs() {
         val logsMap = sessionManager.getAllLogs() // dateKey -> List<LogEntry>
+        val targetMs = (sessionManager.getWorkingHours() * 3600 * 1000).toLong()
         val dailyLogs: List<DailyLog> = logsMap.map { entry ->
             val dateKey = entry.key
             val logs = entry.value
             val workedMs = calculateWorkedTime(dateKey)
-            DailyLog(dateKey, logs, workedMs)
+            val isCheckedOut = sessionManager.getCheckOutMillisForDate(dateKey) > 0L
+            DailyLog(dateKey, logs, workedMs, targetMs, isCheckedOut)
         }.sortedByDescending { it.date }
 
         reportAdapter.setData(dailyLogs)
@@ -51,7 +56,16 @@ class ReportFragment : Fragment() {
         val totalBreak = sessionManager.getTotalBreakMillisForDate(dateKey)
 
         if (checkIn == 0L) return 0L
-        val endTime = if (checkOut > 0L) checkOut else System.currentTimeMillis()
+        
+        val todayKey = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+        val isToday = dateKey == todayKey
+
+        val endTime = when {
+            checkOut > 0L -> checkOut
+            isToday -> System.currentTimeMillis()
+            else -> checkIn // If not today and no checkout, worked time is effectively 0 or just what was recorded
+        }
+        
         return (endTime - checkIn - totalBreak).coerceAtLeast(0L)
     }
 }

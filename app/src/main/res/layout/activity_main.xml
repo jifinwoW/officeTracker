@@ -18,9 +18,11 @@
         android:layout_height="64dp"
         android:layout_gravity="bottom"
         android:background="@color/surface_white"
-        app:itemIconTint="@color/primary_800"
-        app:itemTextColor="@color/primary_800"
-        app:elevation="16dp"
+        app:itemIconTint="@color/nav_item_color"
+        app:itemTextColor="@color/nav_item_color"
+        app:itemIconSize="22dp"
+        app:labelVisibilityMode="selected"
+        app:elevation="8dp"
         app:menu="@menu/bottom_nav_menu"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

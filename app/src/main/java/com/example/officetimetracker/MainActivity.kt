@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.concurrent.Executor
 
@@ -24,29 +25,20 @@ class MainActivity : AppCompatActivity() {
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavigationView.setOnItemSelectedListener { item ->
-            when(item.itemId) {
-                R.id.nav_dashboard -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragmentContainer, DashboardFragment())
-                        .commit()
-                    true
-                }
-                R.id.nav_reports -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragmentContainer, ReportFragment()) // fixed
-                        .commit()
-                    true
-                }
-                R.id.nav_settings -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragmentContainer, SettingsFragment())
-                        .commit()
-                    true
-                }
-                else -> false
+            val fragment = when(item.itemId) {
+                R.id.nav_dashboard -> DashboardFragment()
+                R.id.nav_reports -> ReportFragment()
+                R.id.nav_settings -> SettingsFragment()
+                else -> null
             }
+            
+            fragment?.let { 
+                switchFragment(it, item.itemId)
+                true 
+            } ?: false
         }
 
+        // Initial fragment
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, DashboardFragment())
             .commit()
@@ -67,10 +59,19 @@ class MainActivity : AppCompatActivity() {
 
         promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle("Authenticate")
-            .setSubtitle("Use your fingerprint")
+            .setSubtitle("Confirm identity to access")
             .setNegativeButtonText("Cancel")
             .build()
 
         biometricPrompt.authenticate(promptInfo)
+    }
+
+    private fun switchFragment(fragment: Fragment, itemId: Int) {
+        val currentId = bottomNavigationView.selectedItemId
+        if (currentId == itemId) return
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, fragment)
+            .commit()
     }
 }

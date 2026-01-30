@@ -17,9 +17,9 @@
             android:layout_height="wrap_content"
             android:text="Work History"
             android:textColor="@color/text_main"
-            android:textSize="28sp"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginBottom="24dp"/>
+            android:layout_marginBottom="16dp"/>
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"

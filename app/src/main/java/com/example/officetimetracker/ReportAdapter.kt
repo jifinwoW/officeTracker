@@ -9,7 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-data class DailyLog(val date: String, val logs: List<LogEntry>, val workedMs: Long)
+data class DailyLog(
+    val date: String,
+    val logs: List<LogEntry>,
+    val workedMs: Long,
+    val targetMs: Long,
+    val isCheckedOut: Boolean
+)
 
 class ReportAdapter : RecyclerView.Adapter<ReportAdapter.ReportViewHolder>() {
 
@@ -31,9 +37,26 @@ class ReportAdapter : RecyclerView.Adapter<ReportAdapter.ReportViewHolder>() {
         holder.textDate.text = formatDate(dailyLog.date)
         holder.textWorked.text = "Total Worked: ${formatDuration(dailyLog.workedMs)}"
         
-        val hasLogs = dailyLog.logs.isNotEmpty()
-        holder.textStatus.text = if (hasLogs) "COMPLETED" else "NO LOGS"
-        holder.textStatus.setBackgroundResource(if (hasLogs) R.drawable.status_badge_bg else R.drawable.status_badge_muted_bg)
+        val targetMs = dailyLog.targetMs
+        
+        when {
+            !dailyLog.isCheckedOut && dailyLog.logs.isNotEmpty() -> {
+                holder.textStatus.text = "IN PROGRESS"
+                holder.textStatus.setBackgroundResource(R.drawable.status_badge_info_bg)
+            }
+            dailyLog.workedMs >= targetMs -> {
+                holder.textStatus.text = "COMPLETED"
+                holder.textStatus.setBackgroundResource(R.drawable.status_badge_bg)
+            }
+            dailyLog.workedMs > 0 -> {
+                holder.textStatus.text = "PARTIAL"
+                holder.textStatus.setBackgroundResource(R.drawable.status_badge_muted_bg)
+            }
+            else -> {
+                holder.textStatus.text = "NO LOGS"
+                holder.textStatus.setBackgroundResource(R.drawable.status_badge_muted_bg)
+            }
+        }
 
         holder.logsContainer.removeAllViews()
         dailyLog.logs.forEach {

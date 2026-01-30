@@ -22,20 +22,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Welcome back,"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp"
-                android:textAllCaps="true"
-                android:letterSpacing="0.1"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Focus Session"
                 android:textColor="@color/text_main"
-                android:textSize="28sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
-                android:layout_marginBottom="24dp"/>
+                android:layout_marginBottom="16dp"/>
 
             <!-- Status Overview Card -->
             <com.google.android.material.card.MaterialCardView
@@ -71,6 +61,43 @@
                         android:textColor="@color/text_secondary"
                         android:textSize="14sp"
                         android:layout_marginTop="4dp"/>
+
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/workProgressBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        app:indicatorColor="@color/accent_blue"
+                        app:trackColor="#F1F5F9"
+                        app:trackCornerRadius="4dp"
+                        app:trackThickness="8dp"
+                        android:progress="0"/>
+
+                    <LinearLayout
+                        android:id="@+id/estFinishLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="12dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Estimated Finish:"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp"/>
+
+                        <TextView
+                            android:id="@+id/estFinishText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--:--"
+                            android:textColor="@color/accent_blue"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:layout_marginStart="4dp"/>
+                    </LinearLayout>
 
                     <com.google.android.material.divider.MaterialDivider
                         android:layout_width="match_parent"

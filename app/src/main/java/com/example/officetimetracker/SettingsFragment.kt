@@ -1,5 +1,6 @@
 package com.example.officetimetracker
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ class SettingsFragment : Fragment() {
     private lateinit var workingHoursEdit: TextInputEditText
     private lateinit var saveButton: Button
     private lateinit var clearDataButton: Button
+    private lateinit var switchEmployeeButton: Button
     private lateinit var sessionManager: SessionManager
 
     override fun onCreateView(
@@ -29,30 +31,21 @@ class SettingsFragment : Fragment() {
         workingHoursEdit = view.findViewById(R.id.workingHoursEdit)
         saveButton = view.findViewById(R.id.saveSettingsButton)
         clearDataButton = view.findViewById(R.id.clearDataButton)
+        switchEmployeeButton = view.findViewById(R.id.switchEmployeeButton)
 
         // Load current values
-        userNameEdit.setText(sessionManager.getUserName())
+        userNameEdit.setText(sessionManager.getEmployeeDisplayName().ifEmpty { sessionManager.getUserName() })
         workingHoursEdit.setText(sessionManager.getWorkingHours().toString())
 
-        saveButton.setOnClickListener {
-            saveSettings()
-        }
-
-        clearDataButton.setOnClickListener {
-            showClearDataConfirmation()
-        }
+        saveButton.setOnClickListener { saveSettings() }
+        clearDataButton.setOnClickListener { showClearDataConfirmation() }
+        switchEmployeeButton.setOnClickListener { showSwitchEmployeeConfirmation() }
 
         return view
     }
 
     private fun saveSettings() {
-        val name = userNameEdit.text.toString().trim()
         val hoursStr = workingHoursEdit.text.toString().trim()
-
-        if (name.isEmpty()) {
-            userNameEdit.error = "Name is required"
-            return
-        }
 
         val hours = hoursStr.toFloatOrNull()
         if (hours == null || hours <= 0 || hours > 24) {
@@ -60,10 +53,21 @@ class SettingsFragment : Fragment() {
             return
         }
 
-        sessionManager.setUserName(name)
         sessionManager.setWorkingHours(hours)
-
         Toast.makeText(requireContext(), "Preferences updated", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showSwitchEmployeeConfirmation() {
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Switch Employee?")
+            .setMessage("You will be signed out and taken to the login screen.")
+            .setPositiveButton("Sign Out") { _, _ ->
+                sessionManager.clearEmployeeSession()
+                startActivity(Intent(requireContext(), LoginActivity::class.java))
+                requireActivity().finish()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun showClearDataConfirmation() {
@@ -73,8 +77,8 @@ class SettingsFragment : Fragment() {
             .setPositiveButton("Reset") { _, _ ->
                 sessionManager.clearAllData()
                 Toast.makeText(requireContext(), "Data wiped", Toast.LENGTH_SHORT).show()
-                userNameEdit.setText("")
-                workingHoursEdit.setText("8.0")
+                startActivity(Intent(requireContext(), LoginActivity::class.java))
+                requireActivity().finish()
             }
             .setNegativeButton("Cancel", null)
             .show()

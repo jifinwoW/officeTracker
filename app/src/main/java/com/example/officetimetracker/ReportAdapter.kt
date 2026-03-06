@@ -3,10 +3,12 @@ package com.example.officetimetracker
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 data class DailyLog(
@@ -57,6 +59,7 @@ class ReportAdapter : RecyclerView.Adapter<ReportAdapter.ReportViewHolder>() {
                 holder.textStatus.setBackgroundResource(R.drawable.status_badge_muted_bg)
             }
         }
+
 
         holder.logsContainer.removeAllViews()
         dailyLog.logs.forEach {

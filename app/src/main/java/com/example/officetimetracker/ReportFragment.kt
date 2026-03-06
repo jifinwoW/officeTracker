@@ -8,9 +8,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.widget.Toast
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 import com.example.officetimetracker.LogEntry
 
 class ReportFragment : Fragment() {
@@ -51,21 +53,30 @@ class ReportFragment : Fragment() {
     }
 
     private fun calculateWorkedTime(dateKey: String): Long {
-        val checkIn = sessionManager.getCheckInMillisForDate(dateKey)
-        val checkOut = sessionManager.getCheckOutMillisForDate(dateKey)
-        val totalBreak = sessionManager.getTotalBreakMillisForDate(dateKey)
-
-        if (checkIn == 0L) return 0L
-        
         val todayKey = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
         val isToday = dateKey == todayKey
-
-        val endTime = when {
-            checkOut > 0L -> checkOut
-            isToday -> System.currentTimeMillis()
-            else -> checkIn // If not today and no checkout, worked time is effectively 0 or just what was recorded
-        }
+        var baseWorked = sessionManager.getTotalWorkedForDate(dateKey)
         
-        return (endTime - checkIn - totalBreak).coerceAtLeast(0L)
+        // Fallback for historical data not yet recalculated with the new logic
+        if (baseWorked == 0L && !isToday) {
+            val checkIn = sessionManager.getCheckInMillisForDate(dateKey)
+            val checkOut = sessionManager.getCheckOutMillisForDate(dateKey)
+            val totalBreak = sessionManager.getTotalBreakMillisForDate(dateKey)
+            if (checkIn > 0 && checkOut > 0) {
+                baseWorked = (checkOut - checkIn - totalBreak).coerceAtLeast(0L)
+            }
+        }
+
+        return if (isToday && sessionManager.isCheckedIn()) {
+            val checkIn = sessionManager.getCheckInMillis()
+            val totalBreak = if (sessionManager.isOnBreak()) {
+                val breakStart = sessionManager.getBreakStartMillis()
+                sessionManager.getTotalBreakMillis() + (System.currentTimeMillis() - breakStart)
+            } else sessionManager.getTotalBreakMillis()
+            val currentSession = (System.currentTimeMillis() - checkIn - totalBreak).coerceAtLeast(0L)
+            baseWorked + currentSession
+        } else {
+            baseWorked
+        }
     }
 }

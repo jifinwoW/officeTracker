@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -6,181 +6,521 @@
     android:layout_height="match_parent"
     android:background="@color/bg_light">
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:layout_height="match_parent">
 
-            <!-- Header Section -->
-            <TextView
-                android:id="@+id/greetingText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Welcome back,"
-                android:textColor="@color/text_main"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="16dp"/>
-
-            <!-- Status Overview Card -->
-            <com.google.android.material.card.MaterialCardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="0dp"
-                android:backgroundTint="@color/surface_white">
+                android:orientation="vertical"
+                android:paddingTop="16dp"
+                android:paddingBottom="32dp"
+                android:paddingHorizontal="16dp">
 
-                <LinearLayout
+                <!-- ══════════════════════════════════════ -->
+                <!--  HERO  PROFILE  CARD                  -->
+                <!-- ══════════════════════════════════════ -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
-
-                    <TextView
-                        android:id="@+id/timerText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="00:00:00"
-                        android:textSize="42sp"
-                        android:fontFamily="serif"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_main"/>
-
-                    <TextView
-                        android:id="@+id/remainingText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Target: 08:00:00 remaining"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="14sp"
-                        android:layout_marginTop="4dp"/>
-
-                    <com.google.android.material.progressindicator.LinearProgressIndicator
-                        android:id="@+id/workProgressBar"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        app:indicatorColor="@color/accent_blue"
-                        app:trackColor="#F1F5F9"
-                        app:trackCornerRadius="4dp"
-                        app:trackThickness="8dp"
-                        android:progress="0"/>
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp"
+                    android:backgroundTint="@color/primary_800">
 
                     <LinearLayout
-                        android:id="@+id/estFinishLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="20dp"
+                        android:paddingBottom="22dp">
+
+                        <!-- Row 1: Greeting + Status pill -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="20dp">
+
+                            <TextView
+                                android:id="@+id/greetingText"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Good Morning"
+                                android:textColor="#BFD1C5"
+                                android:textSize="13sp"
+                                android:letterSpacing="0.01"/>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/empStatusCard"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="20dp"
+                                app:cardElevation="0dp"
+                                app:strokeWidth="0dp"
+                                android:backgroundTint="@color/success_green">
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:gravity="center_vertical"
+                                    android:paddingHorizontal="12dp"
+                                    android:paddingVertical="6dp">
+                                    <View
+                                        android:layout_width="6dp"
+                                        android:layout_height="6dp"
+                                        android:background="#FFFFFF"
+                                        android:layout_marginEnd="6dp"/>
+                                    <TextView
+                                        android:id="@+id/empStatusText" 
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Working"
+                                        android:textColor="@color/white"
+                                        android:textSize="11sp"
+                                        android:textStyle="bold"/>
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                        </LinearLayout>
+
+                        <!-- Row 2: Avatar + Name + ID -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <!-- Avatar circle -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="54dp"
+                                android:layout_height="54dp"
+                                app:cardCornerRadius="27dp"
+                                app:cardElevation="0dp"
+                                app:strokeWidth="2dp"
+                                app:strokeColor="@color/accent_blue"
+                                android:backgroundTint="@color/primary_700">
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:src="@drawable/ic_person"
+                                    android:padding="13dp"
+                                    app:tint="#D7ECDD"/>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:layout_marginStart="14dp">
+
+                                <TextView
+                                    android:id="@+id/empDesigText"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Employee"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="19sp"
+                                    android:textStyle="bold"
+                                    android:letterSpacing="0.01"/>
+
+                                <TextView
+                                    android:id="@+id/empIdText"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="ID: —"
+                                    android:textColor="#9DCAA8"
+                                    android:textSize="12sp"
+                                    android:layout_marginTop="3dp"/>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- ══════════════════════════════════════ -->
+                <!--  DATE  NAVIGATION  BAR                -->
+                <!-- ══════════════════════════════════════ -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/surface_border"
+                    android:backgroundTint="@color/surface_white">
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:layout_marginTop="12dp"
-                        android:visibility="gone">
+                        android:gravity="center_vertical">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Estimated Finish:"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp"/>
-
-                        <TextView
-                            android:id="@+id/estFinishText"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="--:--"
-                            android:textColor="@color/accent_blue"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:layout_marginStart="4dp"/>
-                    </LinearLayout>
-
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginBottom="16dp"
-                        app:dividerColor="#E2E8F0"/>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_timer"
+                        <ImageButton
+                            android:id="@+id/btnPrevDay"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:src="@drawable/ic_arrow_left"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:padding="13dp"
                             app:tint="@color/accent_blue"
-                            android:layout_gravity="center_vertical"/>
+                            android:contentDescription="Previous day"/>
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:id="@+id/dateLabelText"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Real-time tracking active"
-                            android:textSize="12sp"
-                            android:textColor="@color/accent_blue"
-                            android:textStyle="bold"
-                            android:layout_marginStart="8dp"/>
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="Today"
+                            android:textColor="@color/text_main"
+                            android:textSize="13sp"
+                            android:textStyle="bold"/>
+
+                        <ImageButton
+                            android:id="@+id/btnNextDay"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:src="@drawable/ic_arrow_right"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:padding="13dp"
+                            app:tint="@color/accent_blue"
+                            android:alpha="0.35"
+                            android:contentDescription="Next day"/>
+
                     </LinearLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                </com.google.android.material.card.MaterialCardView>
 
-            <!-- Activity Logs Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Recent Activity"
-                android:textColor="@color/text_main"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="12dp"/>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="1dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="#F1F5F9"
-                android:backgroundTint="@color/surface_white">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/logRecyclerView"
+                <!-- ══════════════════════════════════════ -->
+                <!--  STAT  TILES  (2 columns)             -->
+                <!-- ══════════════════════════════════════ -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="100dp"
-                    android:padding="8dp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
-            </com.google.android.material.card.MaterialCardView>
+                    android:orientation="horizontal"
+                    android:baselineAligned="false"
+                    android:layout_marginBottom="4dp">
 
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+                    <!-- ─── Tile Left: Total Worked ─── -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="6dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="0dp"
+                        android:backgroundTint="@color/primary_800">
 
-    <!-- Hidden View for animation reference if needed, but we'll use a standard FAB -->
-    <View
-        android:id="@+id/fabGlow"
-        android:layout_width="1dp"
-        android:layout_height="1dp"
-        android:visibility="gone" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:padding="18dp">
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fingerprintFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="32dp"
-        android:text="Punch"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        app:icon="@drawable/finger_print"
-        app:iconTint="@color/white"
-        app:backgroundTint="@color/primary_800"
-        app:elevation="8dp"/>
+                            <!-- Icon row -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                app:cardCornerRadius="10dp"
+                                app:cardElevation="0dp"
+                                app:strokeWidth="0dp"
+                                android:backgroundTint="@color/primary_700"
+                                android:layout_marginBottom="14dp">
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:src="@drawable/ic_timer"
+                                    android:padding="8dp"
+                                    app:tint="#D7ECDD"/>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="TOTAL WORKED"
+                                android:textColor="#A7CFB4"
+                                android:textSize="9sp"
+                                android:letterSpacing="0.10"
+                                android:layout_marginBottom="6dp"/>
+
+                            <TextView
+                                android:id="@+id/totalWorkedText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="00:00:00"
+                                android:textColor="#FFFFFF"
+                                android:textSize="28sp"
+                                android:textStyle="bold"
+                                android:fontFamily="sans-serif-medium"
+                                android:layout_marginBottom="10dp"/>
+
+                            <!-- Divider -->
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="#3A3A3A"
+                                android:layout_marginBottom="10dp"/>
+
+                            <TextView
+                                android:id="@+id/remainingTimeText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:textColor="#C8D8CD"
+                                android:textSize="11sp"
+                                android:lineSpacingExtra="2dp"/>
+
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- ─── Tile Right: Punch Times ─── -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="6dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="@color/surface_border"
+                        android:backgroundTint="@color/surface_white">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:padding="18dp">
+
+                            <!-- Attendance badge -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/attendanceBadgeCard"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="20dp"
+                                app:cardElevation="0dp"
+                                app:strokeWidth="0dp"
+                                android:backgroundTint="@color/text_muted"
+                                android:layout_marginBottom="16dp">
+                                <TextView
+                                    android:id="@+id/attendanceBadgeText"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:paddingHorizontal="11dp"
+                                    android:paddingVertical="5dp"
+                                    android:text="No Data"
+                                    android:textColor="@color/white"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold"/>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- First In -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="FIRST IN"
+                                android:textColor="@color/text_muted"
+                                android:textSize="9sp"
+                                android:letterSpacing="0.08"
+                                android:layout_marginBottom="4dp"/>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginBottom="14dp">
+
+                                <ImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:src="@drawable/ic_check_in"
+                                    app:tint="@color/success_green"
+                                    android:layout_marginEnd="8dp"/>
+
+                                <TextView
+                                    android:id="@+id/firstInText"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="&#8212;"
+                                    android:textColor="@color/text_main"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"/>
+                            </LinearLayout>
+
+                            <!-- Divider -->
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/surface_border"
+                                android:layout_marginBottom="14dp"/>
+
+                            <!-- Last Out -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="LAST OUT"
+                                android:textColor="@color/text_muted"
+                                android:textSize="9sp"
+                                android:letterSpacing="0.08"
+                                android:layout_marginBottom="4dp"/>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <ImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:src="@drawable/ic_check_out"
+                                    app:tint="@color/error_red"
+                                    android:layout_marginEnd="8dp"/>
+
+                                <TextView
+                                    android:id="@+id/lastOutText"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="&#8212;"
+                                    android:textColor="@color/text_main"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"/>
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+
+                <!-- Est. finish chip row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="24dp">
+
+                    <TextView
+                        android:id="@+id/estFinishText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/accent_blue"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:paddingHorizontal="14dp"
+                        android:paddingVertical="7dp"
+                        android:background="@drawable/bg_chip"/>
+                </LinearLayout>
+
+                <!-- ══════════════════════════════════════ -->
+                <!--  ATTENDANCE  LOG  SECTION             -->
+                <!-- ══════════════════════════════════════ -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Attendance Log"
+                        android:textColor="@color/text_main"
+                        android:textSize="17sp"
+                        android:textStyle="bold"/>
+
+                    <ImageButton
+                        android:id="@+id/btnRefresh"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_refresh"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="7dp"
+                        app:tint="@color/accent_blue"
+                        android:contentDescription="Refresh logs"/>
+                </LinearLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/surface_border"
+                    android:backgroundTint="@color/surface_white">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="120dp">
+
+                        <com.google.android.material.progressindicator.CircularProgressIndicator
+                            android:id="@+id/logsProgressIndicator"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_margin="32dp"
+                            android:visibility="visible"
+                            app:indicatorColor="@color/accent_blue"
+                            app:trackColor="@color/surface_border"
+                            app:indicatorSize="40dp"
+                            app:trackThickness="3dp"/>
+
+                        <LinearLayout
+                            android:id="@+id/emptyLogsView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="40dp"
+                            android:visibility="gone">
+
+                            <ImageView
+                                android:layout_width="44dp"
+                                android:layout_height="44dp"
+                                android:src="@drawable/ic_report"
+                                app:tint="#BFD9C8"
+                                android:layout_marginBottom="12dp"/>
+
+                            <TextView
+                                android:id="@+id/emptyLogsText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="No attendance records for this date"
+                                android:textColor="@color/text_muted"
+                                android:textSize="13sp"
+                                android:gravity="center"
+                                android:lineSpacingExtra="3dp"/>
+                        </LinearLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/attLogRecyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false"
+                            android:visibility="gone"/>
+
+                    </FrameLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

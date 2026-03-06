@@ -1,44 +1,74 @@
 package com.example.officetimetracker
 
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
-import android.appwidget.AppWidgetManager
-import android.content.ComponentName
-import android.content.Intent
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import androidx.biometric.BiometricPrompt
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.progressindicator.CircularProgressIndicator
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.Executor
 
 class DashboardFragment : Fragment() {
 
-    private lateinit var fingerprintFab: ExtendedFloatingActionButton
-    private lateinit var timerText: TextView
-    private lateinit var remainingText: TextView
-    private lateinit var greetingText: TextView
-    private lateinit var estFinishText: TextView
-    private lateinit var estFinishLayout: View
-    private lateinit var workProgressBar: com.google.android.material.progressindicator.LinearProgressIndicator
-    private lateinit var logRecyclerView: RecyclerView
     private lateinit var sessionManager: SessionManager
-    private lateinit var executor: Executor
-    private lateinit var biometricPrompt: BiometricPrompt
-    private lateinit var promptInfo: BiometricPrompt.PromptInfo
+
+    // Employee card views
+    private lateinit var greetingText: TextView
+    private lateinit var empIdText: TextView
+    private lateinit var empDesigText: TextView
+    private lateinit var empStatusText: TextView
+
+    // Date navigation views
+    private lateinit var btnPrevDay: ImageButton
+    private lateinit var btnNextDay: ImageButton
+    private lateinit var dateLabelText: TextView
+
+    // Summary card views
+    private lateinit var totalWorkedText: TextView
+    private lateinit var remainingTimeText: TextView
+    private lateinit var estFinishText: TextView
+    private lateinit var firstInText: TextView
+    private lateinit var lastOutText: TextView
+    private lateinit var attendanceBadgeCard: MaterialCardView
+    private lateinit var attendanceBadgeText: TextView
+
+    // Log list views
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var attLogRecyclerView: RecyclerView
+    private lateinit var logsProgressIndicator: CircularProgressIndicator
+    private lateinit var emptyLogsView: LinearLayout
+    private lateinit var emptyLogsText: TextView
+    private lateinit var btnRefresh: ImageButton
+
+    // Adapter & data
+    private lateinit var attLogAdapter: AttLogAdapter
+    private var allLogs: List<AttLogEntry> = emptyList()
+    private var selectedDate: Calendar = Calendar.getInstance()
+
+    // Live timer for "currently in office" state
     private val handler = Handler(Looper.getMainLooper())
     private var timerRunnable: Runnable? = null
-    private val logAdapter = LogAdapter()
+
+    private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+    private val timeFmt = SimpleDateFormat("hh:mm a", Locale.getDefault())
+
+    // -------------------------------------------------------------------------
+    // Lifecycle
+    // -------------------------------------------------------------------------
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,218 +77,313 @@ class DashboardFragment : Fragment() {
     ): View {
         val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
 
-        fingerprintFab = view.findViewById(R.id.fingerprintFab)
-        timerText = view.findViewById(R.id.timerText)
-        remainingText = view.findViewById(R.id.remainingText)
-        greetingText = view.findViewById(R.id.greetingText)
-        estFinishText = view.findViewById(R.id.estFinishText)
-        estFinishLayout = view.findViewById(R.id.estFinishLayout)
-        workProgressBar = view.findViewById(R.id.workProgressBar)
-        logRecyclerView = view.findViewById(R.id.logRecyclerView)
-
         sessionManager = SessionManager(requireContext())
 
+        // Employee card
+        greetingText   = view.findViewById(R.id.greetingText)
+        empIdText      = view.findViewById(R.id.empIdText)
+        empDesigText   = view.findViewById(R.id.empDesigText)
+        empStatusText  = view.findViewById(R.id.empStatusText)
+
+        // Date nav
+        btnPrevDay     = view.findViewById(R.id.btnPrevDay)
+        btnNextDay     = view.findViewById(R.id.btnNextDay)
+        dateLabelText  = view.findViewById(R.id.dateLabelText)
+
+        // Summary
+        totalWorkedText     = view.findViewById(R.id.totalWorkedText)
+        remainingTimeText   = view.findViewById(R.id.remainingTimeText)
+        estFinishText       = view.findViewById(R.id.estFinishText)
+        firstInText         = view.findViewById(R.id.firstInText)
+        lastOutText         = view.findViewById(R.id.lastOutText)
+        attendanceBadgeCard = view.findViewById(R.id.attendanceBadgeCard)
+        attendanceBadgeText = view.findViewById(R.id.attendanceBadgeText)
+
+        // Log list
+        swipeRefreshLayout   = view.findViewById(R.id.swipeRefreshLayout)
+        attLogRecyclerView   = view.findViewById(R.id.attLogRecyclerView)
+        logsProgressIndicator = view.findViewById(R.id.logsProgressIndicator)
+        emptyLogsView        = view.findViewById(R.id.emptyLogsView)
+        emptyLogsText        = view.findViewById(R.id.emptyLogsText)
+        btnRefresh           = view.findViewById(R.id.btnRefresh)
+
         // RecyclerView setup
-        logRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        logRecyclerView.adapter = logAdapter
-        logAdapter.setLogs(sessionManager.getLogsForToday())
+        attLogAdapter = AttLogAdapter()
+        attLogRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        attLogRecyclerView.addItemDecoration(
+            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        )
+        attLogRecyclerView.adapter = attLogAdapter
 
-        updateGreeting()
-
-        executor = ContextCompat.getMainExecutor(requireContext())
-        biometricPrompt = BiometricPrompt(requireActivity(), executor,
-            object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    super.onAuthenticationSucceeded(result)
-                    showActionDialog()
-                }
-
-                override fun onAuthenticationFailed() {
-                    super.onAuthenticationFailed()
-                    Toast.makeText(requireContext(), "Auth failed", Toast.LENGTH_SHORT).show()
-                }
-            })
-
-        promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Authenticate")
-            .setSubtitle("Confirm your identity to log hours")
-            .setNegativeButtonText("Cancel")
-            .build()
-
-        fingerprintFab.setOnClickListener {
-            biometricPrompt.authenticate(promptInfo)
+        // Date navigation clicks
+        btnPrevDay.setOnClickListener {
+            selectedDate.add(Calendar.DAY_OF_YEAR, -1)
+            displayLogsForSelectedDate()
+        }
+        btnNextDay.setOnClickListener {
+            if (!isSameDay(selectedDate, Calendar.getInstance())) {
+                selectedDate.add(Calendar.DAY_OF_YEAR, 1)
+                displayLogsForSelectedDate()
+            }
         }
 
-        startTimer()
+        btnRefresh.setOnClickListener { fetchLogs() }
+
+        swipeRefreshLayout.setColorSchemeResources(R.color.accent_blue)
+        swipeRefreshLayout.setOnRefreshListener { fetchLogs() }
+
         return view
     }
 
     override fun onResume() {
         super.onResume()
-        updateGreeting()
+        populateEmployeeCard()
+        if (allLogs.isEmpty()) fetchLogs() else displayLogsForSelectedDate()
     }
 
-    private fun updateGreeting() {
-        val calendar = Calendar.getInstance()
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        val timeGreeting = when (hour) {
-            in 0..11 -> "Good Morning"
-            in 12..16 -> "Good Afternoon"
-            else -> "Good Evening"
-        }
-        greetingText.text = "$timeGreeting, ${sessionManager.getUserName()}"
-    }
-
-    private fun showActionDialog() {
-        if (sessionManager.hasCheckedOutToday()) {
-            Toast.makeText(requireContext(), "Daily shift completed.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val options = mutableListOf<String>()
-        if (sessionManager.isCheckedIn()) {
-            if (!sessionManager.isOnBreak()) options.add("Break")
-            if (sessionManager.isOnBreak()) options.add("Resume")
-            options.add("Punch Out")
-        } else {
-            options.add("Punch In")
-        }
-
-        AlertDialog.Builder(requireContext())
-            .setTitle("Select Action")
-            .setItems(options.toTypedArray()) { _, which ->
-                when (options[which]) {
-                    "Punch In" -> handlePunchIn()
-                    "Break" -> handlePunchBreak()
-                    "Resume" -> handleResumeWork()
-                    "Punch Out" -> handlePunchOut()
-                }
-            }
-            .show()
-    }
-
-    private fun handlePunchIn() {
-        val now = System.currentTimeMillis()
-        sessionManager.saveCheckIn(now)
-        addLog("Punch In at ${formatTime(now)}")
-        Toast.makeText(requireContext(), "Punched In", Toast.LENGTH_SHORT).show()
-        startTimer()
-        updateWidget()
-    }
-
-    private fun handlePunchBreak() {
-        val now = System.currentTimeMillis()
-        sessionManager.startBreak(now)
-        addLog("Punch Break at ${formatTime(now)}")
-        Toast.makeText(requireContext(), "Break Started", Toast.LENGTH_SHORT).show()
-        updateWidget()
-    }
-
-    private fun handleResumeWork() {
-        val now = System.currentTimeMillis()
-        sessionManager.endBreak(now)
-        addLog("Resumed Work at ${formatTime(now)}")
-        Toast.makeText(requireContext(), "Work Resumed", Toast.LENGTH_SHORT).show()
-        updateWidget()
-    }
-
-    private fun handlePunchOut() {
-        val now = System.currentTimeMillis()
-        
-        // Auto-end break if active
-        if (sessionManager.isOnBreak()) {
-            sessionManager.endBreak(now)
-            addLog("Break ended (Auto) at ${formatTime(now)}")
-        }
-
-        val worked = now - sessionManager.getCheckInMillis() - sessionManager.getTotalBreakMillis()
-        addLog("Punch Out at ${formatTime(now)} | Worked: ${formatDuration(worked)}")
-
-        sessionManager.saveTotalWorkedToday(worked)
-        sessionManager.saveCheckOut(now)
-        Toast.makeText(requireContext(), "Punched Out", Toast.LENGTH_SHORT).show()
+    override fun onPause() {
+        super.onPause()
         stopTimer()
-        startTimer()
-        updateWidget()
     }
 
-    private fun startTimer() {
-        stopTimer() // Prevent multiple runnables
-        timerRunnable = object : Runnable {
-            override fun run() {
-                val elapsed = when {
-                    sessionManager.isCheckedIn() -> {
-                        val checkIn = sessionManager.getCheckInMillis()
-                        val totalBreak = if (sessionManager.isOnBreak()) {
-                            val breakStart = sessionManager.getBreakStartMillis()
-                            sessionManager.getTotalBreakMillis() + (System.currentTimeMillis() - breakStart)
-                        } else sessionManager.getTotalBreakMillis()
-                        System.currentTimeMillis() - checkIn - totalBreak
-                    }
-                    sessionManager.hasCheckedOutToday() -> sessionManager.getTotalWorkedToday()
-                    else -> 0L
-                }
-                
-                timerText.text = formatDuration(elapsed)
-                
-                val workingHours = sessionManager.getWorkingHours()
-                val targetMs = (workingHours * 3600 * 1000).toLong()
-                val remaining = (targetMs - elapsed).coerceAtLeast(0L)
-                remainingText.text = "Target: ${formatDuration(remaining)} remaining"
+    override fun onDestroyView() {
+        super.onDestroyView()
+        stopTimer()
+    }
 
-                // Update Progress Bar
-                val progress = if (targetMs > 0) (elapsed.toFloat() / targetMs * 100).toInt() else 0
-                workProgressBar.setProgress(progress.coerceIn(0, 100), true)
+    // -------------------------------------------------------------------------
+    // Employee card
+    // -------------------------------------------------------------------------
 
-                // Update Estimated Finish Time
-                if (sessionManager.isCheckedIn()) {
-                    val checkIn = sessionManager.getCheckInMillis()
-                    val totalBreakSoFar = if (sessionManager.isOnBreak()) {
-                        val breakStart = sessionManager.getBreakStartMillis()
-                        sessionManager.getTotalBreakMillis() + (System.currentTimeMillis() - breakStart)
-                    } else sessionManager.getTotalBreakMillis()
-                    
-                    val estimatedFinishMs = checkIn + targetMs + totalBreakSoFar
-                    estFinishText.text = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date(estimatedFinishMs))
-                    estFinishLayout.visibility = View.VISIBLE
-                } else {
-                    estFinishLayout.visibility = View.GONE
+    private fun populateEmployeeCard() {
+        val name        = sessionManager.getEmployeeDisplayName()
+        val code        = sessionManager.getEmployeeCode()
+        val designation = sessionManager.getEmployeeDesignation()
+        val status      = sessionManager.getEmployeeStatus()
+
+        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        greetingText.text = "${when (hour) {
+            in 0..11  -> "Good Morning"
+            in 12..16 -> "Good Afternoon"
+            else      -> "Good Evening"
+        }}, $name"
+
+        empIdText.text    = "ID: $code"
+        empDesigText.text = if (designation.isNotBlank()) designation else "Employee"
+        empStatusText.text = status
+    }
+
+    // -------------------------------------------------------------------------
+    // API fetch
+    // -------------------------------------------------------------------------
+
+    private fun fetchLogs() {
+        setLoadingState()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val empCode = sessionManager.getEmployeeCode()
+            when (val result = EmployeeApiService.getAttendanceLogs(empCode)) {
+                is ApiResult.Success -> {
+                    allLogs = result.data.sortedBy { it.logDate }
+                    displayLogsForSelectedDate()
                 }
-                
-                handler.postDelayed(this, 1000)
+                is ApiResult.Error -> {
+                    showEmptyState("Could not load logs: ${result.message}")
+                    clearSummary()
+                }
+                is ApiResult.NetworkError -> {
+                    showEmptyState("Cannot reach the office server.\nPlease connect to the office Wi-Fi and try again.")
+                    clearSummary()
+                    com.google.android.material.snackbar.Snackbar
+                        .make(requireView(), "Server unreachable — not on office Wi-Fi?", com.google.android.material.snackbar.Snackbar.LENGTH_LONG)
+                        .setAction("Retry") { fetchLogs() }
+                        .show()
+                }
             }
         }
-        handler.post(timerRunnable!!)
     }
+
+    // -------------------------------------------------------------------------
+    // Display for selected date
+    // -------------------------------------------------------------------------
+
+    private fun displayLogsForSelectedDate() {
+        stopTimer()
+        updateDateNavButtons()
+
+        val dateKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate.time)
+        val dayLogs = allLogs.filter { it.logDate.startsWith(dateKey) }.sortedBy { it.logDate }
+
+        if (dayLogs.isEmpty()) {
+            showEmptyState("No attendance records for this date")
+            clearSummary()
+        } else {
+            showLogsList(dayLogs)
+            renderSummary(dayLogs)
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Summary calculation + live timer
+    // -------------------------------------------------------------------------
+
+    private fun renderSummary(logs: List<AttLogEntry>) {
+        var totalWorkedMs = 0L
+        var lastInMs      = 0L
+        var firstInMs     = 0L
+        var lastOutMs     = 0L
+        var isCurrentlyIn = false
+
+        for (log in logs) {
+            val t = parseTime(log.logDate)
+            when (log.direction.lowercase()) {
+                "in" -> {
+                    if (firstInMs == 0L) firstInMs = t
+                    lastInMs = t
+                    isCurrentlyIn = true
+                }
+                "out" -> {
+                    lastOutMs = t
+                    if (lastInMs > 0L) {
+                        totalWorkedMs += (t - lastInMs)
+                        lastInMs = 0L
+                    }
+                    isCurrentlyIn = false
+                }
+            }
+        }
+
+        // First In / Last Out labels
+        firstInText.text  = if (firstInMs > 0L) timeFmt.format(Date(firstInMs)) else "—"
+        lastOutText.text  = if (lastOutMs > 0L) timeFmt.format(Date(lastOutMs)) else "—"
+
+        val isToday = isSameDay(selectedDate, Calendar.getInstance())
+        val baseWorked = totalWorkedMs
+        val targetMs = (sessionManager.getWorkingHours() * 3_600_000L).toLong()
+
+        if (isCurrentlyIn && isToday) {
+            val liveInStart = lastInMs
+            setBadge("In Office", Color.parseColor("#10B981"))
+
+            // Start live 1-second ticker
+            timerRunnable = object : Runnable {
+                override fun run() {
+                    val liveWorked = baseWorked + (System.currentTimeMillis() - liveInStart)
+                    totalWorkedText.text = formatDuration(liveWorked)
+                    updateRemainingTime(liveWorked, targetMs, isCurrentlyIn = true)
+                    attLogAdapter.tickLastEntry()
+                    handler.postDelayed(this, 1000L)
+                }
+            }
+            handler.post(timerRunnable!!)
+        } else {
+            totalWorkedText.text = formatDuration(baseWorked)
+            updateRemainingTime(baseWorked, targetMs, isCurrentlyIn = false)
+            setBadge(
+                if (lastOutMs > 0L) "Checked Out" else "No Activity",
+                if (lastOutMs > 0L) Color.parseColor("#EF4444") else Color.parseColor("#64748B")
+            )
+        }
+    }
+
+    private fun updateRemainingTime(workedMs: Long, targetMs: Long, isCurrentlyIn: Boolean) {
+        val remaining = targetMs - workedMs
+        if (remaining > 0) {
+            remainingTimeText.text = "${formatDuration(remaining)} remaining"
+            estFinishText.text = if (isCurrentlyIn) {
+                val eta = System.currentTimeMillis() + remaining
+                "Est. finish: ${timeFmt.format(Date(eta))}"
+            } else {
+                ""
+            }
+        } else {
+            remainingTimeText.text = "Target hours complete \u2713"
+            estFinishText.text = ""
+        }
+    }
+
+    private fun clearSummary() {
+        totalWorkedText.text   = "00:00:00"
+        remainingTimeText.text = ""
+        estFinishText.text     = ""
+        firstInText.text       = "\u2014"
+        lastOutText.text       = "\u2014"
+        setBadge("No Data", Color.parseColor("#64748B"))
+    }
+
+    private fun setBadge(label: String, color: Int) {
+        attendanceBadgeText.text = label
+        attendanceBadgeCard.setCardBackgroundColor(color)
+    }
+
+    // -------------------------------------------------------------------------
+    // UI state helpers
+    // -------------------------------------------------------------------------
+
+    private fun setLoadingState() {
+        swipeRefreshLayout.isRefreshing = true
+        logsProgressIndicator.visibility = View.GONE
+        attLogRecyclerView.visibility    = View.GONE
+        emptyLogsView.visibility         = View.GONE
+    }
+
+    private fun showEmptyState(message: String) {
+        swipeRefreshLayout.isRefreshing  = false
+        logsProgressIndicator.visibility = View.GONE
+        attLogRecyclerView.visibility    = View.GONE
+        emptyLogsView.visibility         = View.VISIBLE
+        emptyLogsText.text               = message
+    }
+
+    private fun showLogsList(logs: List<AttLogEntry>) {
+        attLogAdapter.setLogs(logs)
+        swipeRefreshLayout.isRefreshing  = false
+        logsProgressIndicator.visibility = View.GONE
+        emptyLogsView.visibility         = View.GONE
+        attLogRecyclerView.visibility    = View.VISIBLE
+    }
+
+    private fun updateDateNavButtons() {
+        val today = Calendar.getInstance()
+        val isToday = isSameDay(selectedDate, today)
+        btnNextDay.alpha      = if (isToday) 0.3f else 1.0f
+        btnNextDay.isEnabled  = !isToday
+
+        val isYesterday = run {
+            val y = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -1) }
+            isSameDay(selectedDate, y)
+        }
+        val formatted = SimpleDateFormat("EEE, dd MMM", Locale.getDefault()).format(selectedDate.time)
+        dateLabelText.text = when {
+            isToday     -> "Today · $formatted"
+            isYesterday -> "Yesterday · $formatted"
+            else        -> formatted
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Timer
+    // -------------------------------------------------------------------------
 
     private fun stopTimer() {
         timerRunnable?.let { handler.removeCallbacks(it) }
+        timerRunnable = null
     }
 
-    private fun addLog(message: String) {
-        sessionManager.addLog(message)
-        logAdapter.setLogs(sessionManager.getLogsForToday())
-        logRecyclerView.scrollToPosition(logAdapter.itemCount - 1)
-    }
+    // -------------------------------------------------------------------------
+    // Utilities
+    // -------------------------------------------------------------------------
 
-    private fun formatTime(ms: Long): String =
-        SimpleDateFormat("hh:mm:ss a", Locale.getDefault()).format(Date(ms))
+    private fun isSameDay(c1: Calendar, c2: Calendar): Boolean =
+        c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) &&
+        c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR)
+
+    private fun parseTime(str: String): Long =
+        try { sdf.parse(str)?.time ?: 0L } catch (e: Exception) { 0L }
 
     private fun formatDuration(ms: Long): String {
-        var seconds = ms / 1000
-        val hours = seconds / 3600
-        seconds %= 3600
-        val minutes = seconds / 60
-        seconds %= 60
-        return "%02d:%02d:%02d".format(hours, minutes, seconds)
-    }
-
-    private fun updateWidget() {
-        val intent = Intent(requireContext(), PunchWidgetProvider::class.java)
-        intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-        val ids = AppWidgetManager.getInstance(requireContext())
-            .getAppWidgetIds(ComponentName(requireContext(), PunchWidgetProvider::class.java))
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
-        requireContext().sendBroadcast(intent)
+        var s = ms / 1000
+        val h = s / 3600; s %= 3600
+        val m = s / 60;   s %= 60
+        return "%02d:%02d:%02d".format(h, m, s)
     }
 }

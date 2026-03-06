@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingEnd="16dp"
+    android:minHeight="56dp">
+
+    <!-- Colored left accent bar (tinted IN=green / OUT=red by adapter) -->
+    <View
+        android:id="@+id/logAccentBar"
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:minHeight="56dp"
+        android:background="@color/accent_blue"
+        android:layout_marginEnd="14dp"/>
+
+    <!-- Direction badge (background replaced by adapter with solid green / red) -->
+    <TextView
+        android:id="@+id/directionBadge"
+        android:layout_width="36dp"
+        android:layout_height="wrap_content"
+        android:paddingVertical="5dp"
+        android:gravity="center"
+        android:text="IN"
+        android:textColor="@color/white"
+        android:textSize="10sp"
+        android:textStyle="bold"/>
+
+    <!-- Time + optional duration -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingVertical="10dp"
+        android:paddingStart="12dp">
+
+        <TextView
+            android:id="@+id/logTimeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="09:18 AM"
+            android:textColor="@color/text_main"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/logDurationText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Worked 2h 55m"
+            android:textColor="@color/text_muted"
+            android:textSize="12sp"
+            android:layout_marginTop="2dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+</LinearLayout>

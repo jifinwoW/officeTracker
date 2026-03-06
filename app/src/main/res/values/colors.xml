@@ -1,30 +1,41 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Professional Slate/Blue Design System -->
-    <color name="primary_900">#0F172A</color>
-    <color name="primary_800">#1E293B</color>
-    <color name="primary_700">#334155</color>
-    <color name="primary_500">#64748B</color>
-    
-    <color name="accent_blue">#3B82F6</color>
-    <color name="accent_blue_dark">#2563EB</color>
-    
-    <color name="bg_light">#F8FAFC</color>
+    <!-- ═══ Green Charcoal Design System ═══ -->
+
+    <!-- Primary Charcoal Scale -->
+    <color name="primary_900">#1B1B1B</color>
+    <color name="primary_800">#232323</color>
+    <color name="primary_700">#323232</color>
+    <color name="primary_500">#575757</color>
+
+    <!-- Accent Green -->
+    <color name="accent_blue">#009736</color>
+    <color name="accent_blue_dark">#007D2C</color>
+
+    <!-- Backgrounds -->
+    <color name="bg_light">#F7FAF8</color>
     <color name="surface_white">#FFFFFF</color>
-    
-    <color name="text_main">#0F172A</color>
-    <color name="text_secondary">#475569</color>
-    <color name="text_muted">#94A3B8</color>
-    
-    <color name="success_green">#10B981</color>
+    <color name="surface_soft">#F3F7F4</color>
+    <color name="surface_border">#DDE7E0</color>
+    <color name="surface_tint">#FAFCFB</color>
+    <color name="accent_soft">#E6F4EB</color>
+
+    <!-- Text -->
+    <color name="text_main">#232323</color>
+    <color name="text_secondary">#5B645E</color>
+    <color name="text_muted">#8B948E</color>
+    <color name="text_soft_accent">#009736</color>
+
+    <!-- Semantic -->
+    <color name="success_green">#009736</color>
     <color name="error_red">#EF4444</color>
     <color name="warning_amber">#F59E0B</color>
 
-    <!-- Compatibility / Legacy colors if needed by other files -->
+    <!-- Utility / Legacy aliases (keep to avoid breaking other refs) -->
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
-    <color name="deep_navy">#1E293B</color>
-    <color name="darker_navy">#0F172A</color>
-    <color name="gold_accent">#3B82F6</color> <!-- Replaced gold with blue but kept ID to avoid breaking UI -->
-    <color name="teal_200">#3B82F6</color>
+    <color name="deep_navy">#232323</color>
+    <color name="darker_navy">#1B1B1B</color>
+    <color name="gold_accent">#009736</color>
+    <color name="teal_200">#009736</color>
 </resources>

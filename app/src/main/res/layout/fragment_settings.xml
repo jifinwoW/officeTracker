@@ -46,7 +46,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Display Name"
+                android:hint="Employee Name"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:boxStrokeColor="@color/accent_blue"
                 app:hintTextColor="@color/accent_blue">
@@ -56,7 +56,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPersonName"
-                    android:textColor="@color/text_main"/>
+                    android:textColor="@color/text_main"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:cursorVisible="false"
+                    android:background="@null"/>
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
@@ -124,6 +128,17 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
+
+    <!-- Switch Employee -->
+    <Button
+        android:id="@+id/switchEmployeeButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Switch Employee (Sign Out)"
+        android:textAllCaps="false"
+        android:textColor="@color/accent_blue"
+        android:layout_marginBottom="4dp"
+        style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
     <!-- Danger Zone -->
     <Button

@@ -15,10 +15,21 @@
 
     <TextView
         android:id="@+id/logMessage"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:textColor="@color/text_main"
         android:textSize="14sp"
         android:text="Checked in at 09:00:00"/>
+
+    <ImageButton
+        android:id="@+id/editLogButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/ic_menu_edit"
+        android:contentDescription="Edit entry"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:tint="@color/accent_blue"
+        android:padding="8dp"/>
 
 </LinearLayout>

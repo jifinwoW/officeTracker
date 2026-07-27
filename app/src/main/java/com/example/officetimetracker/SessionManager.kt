@@ -114,6 +114,39 @@ class SessionManager(context: Context) {
         val type = object : TypeToken<List<LogEntry>>() {}.type
         return Gson().fromJson(json, type)
     }
+
+    fun saveLogsForToday(logs: List<LogEntry>) {
+        prefs.edit().putString("$KEY_LOGS-$todayKey", Gson().toJson(logs)).apply()
+    }
+
+    fun clearTodaySession() {
+        prefs.edit()
+            .remove("$KEY_CHECKIN-$todayKey")
+            .remove("$KEY_BREAK_START-$todayKey")
+            .remove("$KEY_TOTAL_BREAK-$todayKey")
+            .remove("$KEY_CHECKOUT-$todayKey")
+            .apply()
+    }
+
+    fun rebuildTodaySessionFromLogs(logs: List<LogEntry>) {
+        clearTodaySession()
+        val sortedLogs = logs.sortedBy { it.timestamp }
+        for (entry in sortedLogs) {
+            when {
+                entry.message.startsWith("Punch In") -> saveCheckIn(entry.timestamp)
+                entry.message.startsWith("Punch Break") -> startBreak(entry.timestamp)
+                entry.message.startsWith("Resumed Work") -> endBreak(entry.timestamp)
+                entry.message.contains("Break ended") -> endBreak(entry.timestamp)
+                entry.message.startsWith("Punch Out") -> {
+                    if (isOnBreak()) endBreak(entry.timestamp)
+                    saveCheckOut(entry.timestamp)
+                    val worked = entry.timestamp - getCheckInMillis() - getTotalBreakMillis()
+                    saveTotalWorkedToday(worked)
+                }
+            }
+        }
+    }
+
     fun saveTotalWorkedToday(ms: Long) {
     val today = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
     prefs.edit().putLong(KEY_TOTAL_WORKED_TODAY, ms).apply()

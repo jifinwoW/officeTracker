@@ -7,7 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.TimePicker
 import android.widget.Toast
+import android.app.TimePickerDialog
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Intent
@@ -38,7 +40,7 @@ class DashboardFragment : Fragment() {
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
     private val handler = Handler(Looper.getMainLooper())
     private var timerRunnable: Runnable? = null
-    private val logAdapter = LogAdapter()
+    private val logAdapter = LogAdapter(::onEditLogEntry)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -239,6 +241,87 @@ class DashboardFragment : Fragment() {
         sessionManager.addLog(message)
         logAdapter.setLogs(sessionManager.getLogsForToday())
         logRecyclerView.scrollToPosition(logAdapter.itemCount - 1)
+    }
+
+    private fun onEditLogEntry(position: Int) {
+        val todayLogs = sessionManager.getLogsForToday().toMutableList()
+        if (position < 0 || position >= todayLogs.size) return
+
+        val selectedLog = todayLogs[position]
+        val calendar = Calendar.getInstance().apply { timeInMillis = selectedLog.timestamp }
+
+        TimePickerDialog(requireContext(), { _, hourOfDay, minute ->
+            val newTimestamp = Calendar.getInstance().apply {
+                timeInMillis = selectedLog.timestamp
+                set(Calendar.HOUR_OF_DAY, hourOfDay)
+                set(Calendar.MINUTE, minute)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }.timeInMillis
+
+            if (newTimestamp == selectedLog.timestamp) return@TimePickerDialog
+
+            todayLogs[position] = selectedLog.copy(timestamp = newTimestamp)
+            val normalizedLogs = normalizeLogs(todayLogs)
+            sessionManager.saveLogsForToday(normalizedLogs)
+            sessionManager.rebuildTodaySessionFromLogs(normalizedLogs)
+            logAdapter.setLogs(normalizedLogs)
+            logRecyclerView.scrollToPosition(logAdapter.itemCount - 1)
+            updateWidget()
+            Toast.makeText(requireContext(), "Entry time updated", Toast.LENGTH_SHORT).show()
+        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show()
+    }
+
+    private fun normalizeLogs(logs: List<LogEntry>): List<LogEntry> {
+        val sorted = logs.sortedBy { it.timestamp }
+        var currentCheckIn = 0L
+        var breakStart = 0L
+        var totalBreak = 0L
+
+        return sorted.map { entry ->
+            when {
+                entry.message.startsWith("Punch In") -> {
+                    currentCheckIn = entry.timestamp
+                    breakStart = 0L
+                    totalBreak = 0L
+                    entry.copy(message = "Punch In at ${formatTime(entry.timestamp)}")
+                }
+                entry.message.startsWith("Punch Break") -> {
+                    breakStart = entry.timestamp
+                    entry.copy(message = "Punch Break at ${formatTime(entry.timestamp)}")
+                }
+                entry.message.startsWith("Resumed Work") -> {
+                    if (breakStart > 0L) {
+                        totalBreak += entry.timestamp - breakStart
+                        breakStart = 0L
+                    }
+                    entry.copy(message = "Resumed Work at ${formatTime(entry.timestamp)}")
+                }
+                entry.message.contains("Break ended") -> {
+                    if (breakStart > 0L) {
+                        totalBreak += entry.timestamp - breakStart
+                        breakStart = 0L
+                    }
+                    entry.copy(message = "Break ended (Auto) at ${formatTime(entry.timestamp)}")
+                }
+                entry.message.startsWith("Punch Out") -> {
+                    if (breakStart > 0L) {
+                        totalBreak += entry.timestamp - breakStart
+                        breakStart = 0L
+                    }
+                    val worked = if (currentCheckIn > 0L) entry.timestamp - currentCheckIn - totalBreak else 0L
+                    entry.copy(message = "Punch Out at ${formatTime(entry.timestamp)} | Worked: ${formatDuration(worked)}")
+                }
+                else -> {
+                    val regex = "(at\\s+)(\\d{2}:\\d{2}:\\d{2}\\s+[AP]M)".toRegex()
+                    if (regex.containsMatchIn(entry.message)) {
+                        entry.copy(message = regex.replace(entry.message, "$1${formatTime(entry.timestamp)}"))
+                    } else {
+                        entry
+                    }
+                }
+            }
+        }
     }
 
     private fun formatTime(ms: Long): String =
